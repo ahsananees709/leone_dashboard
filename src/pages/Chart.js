@@ -5,7 +5,7 @@ import Loader from "../components/Loader";
 
 const ChartPage = () => {
   const [page, setPage] = useState(1);
-  const [displayCount, setDisplayCount] = useState(10);
+  const [displayCount, setDisplayCount] = useState(5);
   const [productsData, setProductsData] = useState([]);
   const [totalProducts, setTotalProducts] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
@@ -86,7 +86,7 @@ const ChartPage = () => {
         </label>
       </div>
     
-      <div className="w-full max-w-full mx-auto">
+      <div className="flex-grow w-full flex justify-center items-center">
         {loading ? (
           <Loader />
         ) : (

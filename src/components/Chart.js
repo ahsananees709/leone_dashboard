@@ -1,7 +1,7 @@
-import React, { useEffect } from "react";
-import { Line } from "react-chartjs-2";
+import React, { useEffect, useRef } from "react";
 import {
   Chart as ChartJS,
+  LineController,
   LineElement,
   CategoryScale,
   LinearScale,
@@ -10,50 +10,96 @@ import {
   Legend,
 } from "chart.js";
 
-ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend);
-
-function Chart({ startIndex, displayCount, productsData }) {
-
-  const endIndex = Math.min(startIndex + displayCount, productsData.length);
-
-  const selectedProducts = productsData.slice();
-
-  if (selectedProducts.length === 0) {
-    return <div className="text-2xl font-bold p-4 text-center">No Properties Found</div>;
-  }
-
-  const chartData = {
-    labels: selectedProducts[0].data.map((point) => point.x),
-    datasets: selectedProducts.map((product, index) => ({
-      label: product.title,
-      data: product.data.map((point) => point.y),
-      borderColor: `hsl(${index * 36}, 70%, 50%)`,
-      backgroundColor: `hsla(${index * 36}, 70%, 50%, 0.3)`,
-      fill: false,
-    })),
-  };
-
-  const chartOptions = {
-    responsive: true,
-    scales: {
-      x: {
-        type: "category",
-        title: { display: true, text: "Date" },
-      },
-      y: {
-        reverse: true,
-        title: { display: true, text: "Ranking" },
-      },
-    },
-  };
-
-    return (
-      <div className="flex justify-center items-center w-full h-full p-4">
-      <div className="w-full max-w-4xl h-full">
-        <Line key={startIndex + displayCount} data={chartData} options={chartOptions} />
-      </div>
-    </div>
+ChartJS.register(
+  LineController,
+  LineElement,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  Tooltip,
+  Legend
 );
-}
+
+const Chart = ({ startIndex, displayCount, productsData }) => {
+  const canvasRef = useRef(null);
+  const chartInstance = useRef(null);
+
+  useEffect(() => {
+    if (chartInstance.current) {
+      chartInstance.current.destroy();
+    }
+
+    const selectedProducts = productsData.slice();
+
+    if (selectedProducts.length === 0) return;
+
+    const chartData = {
+      labels: selectedProducts[0].data.map((point) => point.x),
+      datasets: selectedProducts.map((product, index) => ({
+        label: product.title,
+        data: product.data.map((point) => point.y),
+        borderColor: `hsl(${index * 36}, 70%, 50%)`,
+        backgroundColor: `hsla(${index * 36}, 70%, 50%, 0.3)`,
+        tension: 0.4, 
+      })),
+    };
+
+    const chartOptions = {
+      responsive: true,
+      maintainAspectRatio: false,
+      layout: {
+        padding: {
+          left: 20, 
+          right: 20,
+          top: 20, 
+          bottom: 20,
+        },
+      },
+      scales: {
+        x: {
+          type: "category",
+          title: { display: true, text: "Date" },
+        },
+        y: {
+          reverse: true,
+          title: { display: true, text: "Ranking" },
+        },
+      },
+    };
+
+
+    const ctx = canvasRef.current.getContext("2d");
+    chartInstance.current = new ChartJS(ctx, {
+      type: "line", 
+      data: chartData,
+      options: chartOptions,
+    });
+
+    return () => {
+      if (chartInstance.current) {
+        chartInstance.current.destroy();
+      }
+    };
+  }, [startIndex, displayCount, productsData]);
+
+  const chartHeight =
+    productsData.length > 15
+      ? "h-[900px]"
+      : productsData.length > 5
+      ? "h-[600px]"
+      : "h-[400px]";
+
+  return (
+    <div className={`w-[600px] ${chartHeight} sm:w-full`}>
+    {productsData?.length === 0 ? (
+      <div className="w-full h-full flex justify-center items-center text-xl font-semibold text-gray-500">
+        No Data Available
+      </div>
+    ) : (
+      <canvas ref={canvasRef}></canvas>
+    )}
+  </div>
+  );
+};
 
 export default Chart;
