@@ -34,7 +34,13 @@ const Chart = ({ startIndex, displayCount, productsData }) => {
     if (selectedProducts.length === 0) return;
 
     const chartData = {
-      labels: selectedProducts[0].data.map((point) => point.x),
+      labels: selectedProducts[0].data.map((point) => {
+        const date = new Date(point.x);
+        const day = date.getDate();
+        const month = date.toLocaleString('default', { month: 'short' });
+        return `${day} ${month}`;
+      }),
+    
       datasets: selectedProducts.map((product, index) => ({
         label: product.title,
         data: product.data.map((point) => point.y),
