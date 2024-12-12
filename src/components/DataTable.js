@@ -29,6 +29,7 @@ function DataTable({ data, setData }) {
             <th className="px-2 sm:px-4 py-2 border-b text-left">Title</th>
             <th className="px-2 sm:px-4 py-2 border-b text-left">URL</th>
             <th className="px-2 sm:px-4 py-2 border-b text-left">Today's Ranking</th>
+            <th className="px-2 sm:px-4 py-2 border-b text-left">Average Ranking</th>
             <th className="px-2 sm:px-4 py-2 border-b text-left">Actions</th>
           </tr>
         </thead>
@@ -43,6 +44,7 @@ function DataTable({ data, setData }) {
                 </a>
               </td>
               <td className="px-2 sm:px-4 py-2 border-b">{item.todayRanking}</td>
+              <td className="px-2 sm:px-4 py-2 border-b">{item.averageRanking}</td>
               <td className="px-2 sm:px-4 py-2 border-b">
                 <button
                   onClick={() => handleEditClick(item)}
