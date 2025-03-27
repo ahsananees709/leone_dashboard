@@ -14,10 +14,10 @@ export const fetchProductRankings = async (startIndex = 0, displayCount = 10, st
   }
 };
 
-export const fetchProducts = async (page=1) => {
+export const fetchProducts = async (page=1, displayCount= 10) => {
   try {
     const response = await axios.get(`${base_url}/products`, {
-      params: { page }
+      params: { page, limit:displayCount }
     });
     return response;
   } catch (error) {
